@@ -2,57 +2,93 @@ require_relative 'Vertice'
 
 class Grafo
 
-	attr_accessor :grafo
-
-		def initialize()
-			@grafo = Hash.new()
+		def initialize isGrafo
+			@grafo = Hash.new
+			@isGrafo = isGrafo
 		end
 
-	def get(id)
+	private
+	attr_accessor :grafo, :isGrafo
+
+	def get id
 		if grafo.size == 0
 			return nil
 		end
 
 		keys = grafo.keys
-		keys.each{ |key|
+		keys.each do |key|
 			if key.getId == id
 				return key
-			else
-				next
 			end
-		}
-		
+		end
+
 		return nil
 	end
 
-	def adiciona(key, mapped)
-		vertice = get(key)
-		if vertice == nil
-			vertice = Vertice.new(key)
-			grafo[vertice] = []
-			grafo[vertice] << mapped
-		else
-			grafo[vertice] << mapped
-		end
+	def addVertice vertice
+		vertice = Vertice.new vertice
+		grafo[vertice] = []
+		vertice
 	end
 
-	def print
+	def profundidade vertice
+
+	end
+
+	public
+	def fullkey
+		array = []
+		grafo.each do |key, mapped| array << key end
+		array
+	end
+
+
+	def addAresta key, mapped
+		v = get key
+		vv = get mapped
+
+		if v == nil
+			v = addVertice key
+		end
+		if vv == nil
+			vv = addVertice mapped
+		end
+
+		if isGrafo == false
+			grafo[v] << vv
+			return
+		end
+
+		grafo[v] << vv
+		grafo[vv] << v
+	end
+
+	def printg
 		if grafo.size == 0
 			puts "Grafo nao possui valores."
 			return
 		end
 
-		grafo.each{|key, mapped| puts "#{key.getId} => #{mapped}"}
+		grafo.each do |key, mapped|
+			print "#{key.getId} => "
+			mapped.each{|map| print "#{map.getId} "}
+			puts ""
+		end
+	end
+
+	def profundidade
+
 	end
 
 end
 
-grafo = Grafo.new
-grafo.adiciona(2, 'DOIS')
-grafo.adiciona(3, 'TRES')
-grafo.adiciona(4, 'QUATRO')
-grafo.adiciona(5, 'CINCO')
-grafo.adiciona(2, 'TRES')
-grafo.adiciona(6, 'SEIS')
+grafo = Grafo.new false
+grafo.addAresta 2, 1
+grafo.addAresta 3, 2
+grafo.addAresta 4, 3
+grafo.addAresta 5, 1
+grafo.addAresta 2, 5
+grafo.addAresta 6, 1
 
-grafo.print
+grafo.printg
+puts "\n"
