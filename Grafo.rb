@@ -5,10 +5,11 @@ class Grafo
 		def initialize isGrafo
 			@grafo = Hash.new
 			@isGrafo = isGrafo
+			@tempo = 1
 		end
 
-	private
-	attr_accessor :grafo, :isGrafo
+private
+	attr_accessor :grafo, :tempo, :isGrafo #se o 'isGrafo' for false, então será criado um digrafo.
 
 	def get id
 		if grafo.size == 0
@@ -17,9 +18,7 @@ class Grafo
 
 		keys = grafo.keys
 		keys.each do |key|
-			if key.getId == id
-				return key
-			end
+			return key if key.getId == id
 		end
 
 		return nil
@@ -31,17 +30,65 @@ class Grafo
 		vertice
 	end
 
-	def profundidade vertice
-
-	end
-
-	public
 	def fullkey
 		array = []
 		grafo.each do |key, mapped| array << key end
 		array
 	end
 
+	def resetVertice
+		grafo.each do |key, mapped|
+			key.setCor "B"
+			key.setTempo 0
+			key.setLargura 0
+		end
+	end
+
+	def printTempo
+		grafo.each do |key, mapped|
+			puts "#{key.getId} : #{key.getTempo}"
+		end
+	end
+
+	def printLargura
+		grafo.each do |key, mapped|
+			puts "#{key.getId} : #{key.getLargura}"
+		end
+	end
+
+	def profundidadeR key
+		@tempo = @tempo+1
+		key.setTempo tempo
+		key.setCor "C"
+
+		grafo[key].each do |vertice|
+			profundidadeR vertice if vertice.getCor == "B"
+		end
+
+		key.setTempo tempo
+		key.setCor "P"
+		@tempo = @tempo+1
+	end
+
+	def larguraR key
+		lista = []
+		lista << key
+
+		while !lista.empty?
+
+			key = lista.delete_at(0)
+			key.setCor "P"
+
+			grafo[key].each do |vertice|
+				next if vertice.getCor != "B"
+				vertice.setCor "C"
+				vertice.setLargura key.getLargura+1
+				lista << vertice
+			end
+		end
+	end
+
+public
 
 	def addAresta key, mapped
 		v = get key
@@ -76,19 +123,42 @@ class Grafo
 		end
 	end
 
-	def profundidade
+	def profundidade toReset, toPrint	#se o 'toReset' for true, então será resetado a cor e o tempo de cada vertice
+		grafo.each do |key, mapped|
+			profundidadeR key if key.getCor == "B"
+		end
 
+		printTempo if toPrint == true
+		resetVertice if toReset == true
+		@tempo = 0
 	end
 
+	def largura key, toReset, toPrint
+		if isGrafo == false
+			puts "Impossivel realizar a busca em largura em Digrafo."
+			return
+		end
+
+		key = get key
+		return if key == nil
+
+		larguraR key
+
+		printLargura if toPrint == true
+		resetVertice if toReset == true
+	end
 end
 
-grafo = Grafo.new false
-grafo.addAresta 2, 1
-grafo.addAresta 3, 2
-grafo.addAresta 4, 3
-grafo.addAresta 5, 1
-grafo.addAresta 2, 5
-grafo.addAresta 6, 1
+grafo = Grafo.new true
+grafo.addAresta "u", "v"
+grafo.addAresta "v", "y"
+grafo.addAresta "u", "x"
+grafo.addAresta "y", "x"
+grafo.addAresta "x", "v"
+grafo.addAresta "w", "y"
+grafo.addAresta "w", "z"
+grafo.addAresta "z", "z"
 
-grafo.printg
-puts "\n"
+#grafo.printg
+#grafo.profundidade true, false
+grafo.largura "v", true, true

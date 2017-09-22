@@ -1,7 +1,7 @@
 class Vertice
 
 	private
-	attr_accessor :id, :cor, :tempo
+	attr_accessor :id, :cor, :tempo, :largura
 
 	public
 
@@ -9,6 +9,7 @@ class Vertice
 			@id = id
 			@cor = "B"
 			@tempo = 0
+			@largura = 0
 		end
 
 	def getId
@@ -33,6 +34,14 @@ class Vertice
 
 	def setCor cor
 		@cor = cor
+	end
+
+	def setLargura largura
+		@largura = largura
+	end
+
+	def getLargura
+		largura
 	end
 
 end
