@@ -24,12 +24,6 @@ private
 		return nil
 	end
 
-	def addVertice vertice
-		vertice = Vertice.new vertice
-		grafo[vertice] = []
-		vertice
-	end
-
 	def fullkey
 		array = []
 		grafo.each do |key, mapped| array << key end
@@ -56,18 +50,19 @@ private
 		end
 	end
 
-	def profundidadeR key
+	def profundidadeR key, isTopologicaArray	#se for chamado por uma ordenacao topologica, será diferente de nil
 		@tempo = @tempo+1
 		key.setTempo tempo
 		key.setCor "C"
 
 		grafo[key].each do |vertice|
-			profundidadeR vertice if vertice.getCor == "B"
+			profundidadeR vertice, isTopologicaArray if vertice.getCor == "B"
 		end
 
 		key.setTempo tempo
 		key.setCor "P"
 		@tempo = @tempo+1
+		isTopologicaArray << key unless isTopologicaArray == nil	#tinha que ser adicionado ao inicio, mas na hora de printar é começado em -1
 	end
 
 	def larguraR key
@@ -89,6 +84,12 @@ private
 	end
 
 public
+
+	def addVertice vertice
+		vertice = Vertice.new vertice
+		grafo[vertice] = []
+		vertice
+	end
 
 	def addAresta key, mapped
 		v = get key
@@ -125,7 +126,7 @@ public
 
 	def profundidade toReset, toPrint	#se o 'toReset' for true, então será resetado a cor e o tempo de cada vertice
 		grafo.each do |key, mapped|
-			profundidadeR key if key.getCor == "B"
+			profundidadeR key, nil if key.getCor == "B"	#passando nil, pois nao queremos um array para ordenacao topológica, apenas queremos a profundidade
 		end
 
 		printTempo if toPrint == true
@@ -147,18 +148,34 @@ public
 		printLargura if toPrint == true
 		resetVertice if toReset == true
 	end
+
+	def ordenacaoTologica	#a ordenação varia de acordo com a inserção
+		array = []
+		grafo.each do |key, mapped|
+			profundidadeR key, array if key.getCor == "B"
+		end
+
+		puts "Ordenação Topológica"
+		for i in (1..array.size)
+			print "#{array[-i].getId} "
+		end
+		puts ""
+	end
 end
 
-grafo = Grafo.new true
-grafo.addAresta "u", "v"
-grafo.addAresta "v", "y"
-grafo.addAresta "u", "x"
-grafo.addAresta "y", "x"
-grafo.addAresta "x", "v"
-grafo.addAresta "w", "y"
-grafo.addAresta "w", "z"
-grafo.addAresta "z", "z"
+grafo = Grafo.new false					#false é para digrafo, e true para grafo
+grafo.addAresta "camisa", "gravata"
+grafo.addAresta "gravata", "paleto"
+grafo.addAresta "camisa", "cinto"
+grafo.addAresta "cinto", "paleto"
+grafo.addVertice "relogio"
+grafo.addAresta "cueca", "sapato"
+grafo.addAresta "cueca", "calca"
+grafo.addAresta "calca", "sapato"
+grafo.addAresta "calca", "cinto"
+grafo.addAresta "meia", "sapato"
 
 #grafo.printg
-#grafo.profundidade true, false
-grafo.largura "v", true, true
+#grafo.profundidade true, true		#(resetar vertice?, imprimir vertices?)
+#grafo.largura "v", true, true		#(resetar vertice?, imprimir vertices?)
+grafo.ordenacaoTologica
