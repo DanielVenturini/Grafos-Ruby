@@ -4,7 +4,6 @@ class Vertice
 	attr_accessor :id, :cor, :tempo, :largura
 
 	public
-
 		def initialize id
 			@id = id
 			@cor = "B"
