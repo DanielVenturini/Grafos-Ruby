@@ -1,6 +1,7 @@
 require_relative 'Vertice'
 require_relative 'Aresta'
 #require_relative 'Tree'
+require_relative 'Graphviz'
 
 class Grafo
 
@@ -164,27 +165,41 @@ public
 		end
 		puts ""
 	end
+
+	def toGraphviz
+		return if grafo.size.eql? 0
+
+		arq = File.new("arvore.dot", "w+")
+		arq.puts "digraph BST {"
+		arq.puts "node [fontname=\"Arial\"];"
+
+		grafo.each do |key, mapped|
+			mapped.each do |aresta|
+				arq.puts "#{key.getId} -> #{aresta.getVerticeAdjacente.getId} [label=\"#{aresta.getPeso}\"];"
+			end
+		end
+
+		arq.puts "}"
+		arq.close
+
+		Graphviz.new "arvore.dot"
+	end
+
 end
 
-grafo = Grafo.new true					#false é para digrafo, e true para grafo
-grafo.addAresta "camisa", "gravata", 5
-grafo.addAresta "camisa", "cinto", 6
+grafo = Grafo.new false					#false é para digrafo, e true para grafo
 
-grafo.addAresta "gravata", "paleto", 8
+grafo.addAresta "a", "b", 4
+grafo.addAresta "b", "c", 8
+grafo.addAresta "c", "i", 2
+grafo.addAresta "c", "f", 4
+grafo.addAresta "c", "d", 7
+grafo.addAresta "d", "e", 9
+grafo.addAresta "f", "g", 2
+grafo.addAresta "g", "h", 1
 
-grafo.addAresta "cinto", "paleto", 7
-
-grafo.addVertice "relogio"
-
-grafo.addAresta "cueca", "sapato", 2
-grafo.addAresta "cueca", "calca", 9
-
-grafo.addAresta "calca", "sapato", 11
-grafo.addAresta "calca", "cinto", 20
-
-grafo.addAresta "meia", "sapato", 31
-
-grafo.printg
+grafo.toGraphviz
+#grafo.printg
 #grafo.largura "meia", true, true		#(resetar vertice?, imprimir vertices?)
-grafo.profundidade true, true		#(resetar vertice?, imprimir vertices?)
+#grafo.profundidade true, true		#(resetar vertice?, imprimir vertices?)
 #grafo.ordenacaoTologica

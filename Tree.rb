@@ -1,4 +1,5 @@
 require_relative 'Node'
+require_relative 'Graphviz'
 
 class Tree
 
@@ -30,6 +31,17 @@ class Tree
 		printTR node.getRight
 	end
 
+	def toGraphvizTree arq, root
+		return if root.nil?
+
+		arq.puts "#{root.getValue} -> #{root.getLeft.getValue};" unless root.getLeft.nil?
+		arq.puts "#{root.getValue} -> #{root.getRight.getValue};" unless root.getRight.nil?
+
+		toGraphvizTree arq, root.getLeft
+		toGraphvizTree arq, root.getRight
+	end
+
+
 	public
 	def getRoot
 		root
@@ -42,7 +54,23 @@ class Tree
 	def printT
 		puts "Printando arvore."
 		printTR root
+		puts ""
 	end
+
+	def toGraphviz
+		return if root.nil?
+
+		arq = File.new("arvore.dot", "w+")
+		arq.puts "digraph BST {"
+		arq.puts "node [fontname=\"Arial\"];"
+
+		toGraphvizTree arq, root
+
+		arq.puts "}"
+		arq.close
+
+		Graphviz.new "arvore.dot"
+	end		
 
 end
 
@@ -59,3 +87,4 @@ tree.insert 14
 tree.insert 13
 
 tree.printT
+tree.toGraphviz
