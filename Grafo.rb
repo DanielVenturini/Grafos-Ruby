@@ -1,5 +1,6 @@
 require_relative 'Vertice'
 require_relative 'Aresta'
+#require_relative 'Tree'
 
 class Grafo
 
@@ -9,7 +10,7 @@ class Grafo
 			@tempo = 0
 		end
 
-	#private
+	private
 	attr_accessor :grafo, :tempo, :isGrafo #se o 'isGrafo' for false, então será criado um digrafo.
 
 	def get id
@@ -117,6 +118,7 @@ public
 			return
 		end
 
+		puts "Printando o Grafo"
 		grafo.each do |key, mapped|
 			print "#{key.getId} => "
 			mapped.each{ |aresta| print "#{aresta.getVerticeAdjacente.getId} " }
